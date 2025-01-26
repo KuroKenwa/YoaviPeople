@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/textView4"
+        android:layout_width="128dp"
+        android:layout_height="51dp"
+        android:fontFamily="@font/librebaskerville_bold"
+        android:text="Menu"
+        android:textColor="#673AB7"
+        android:textSize="35sp"
+        tools:ignore="HardcodedText,MissingConstraints"
+        tools:layout_editor_absoluteX="123dp"
+        tools:layout_editor_absoluteY="121dp" />
+
+    <TextView
+        android:id="@+id/textView8"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:fontFamily="@font/librebaskerville_italic"
+        android:text="Users"
+        android:textSize="25sp"
+        app:layout_constraintBottom_toTopOf="@+id/textView10"
+        tools:ignore="HardcodedText,MissingConstraints"
+        tools:layout_editor_absoluteX="77dp" />
+
+    <TextView
+        android:id="@+id/textView10"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="20dp"
+        android:fontFamily="@font/librebaskerville_italic"
+        android:text="temp"
+        android:textSize="25sp"
+        app:layout_constraintBottom_toTopOf="@+id/textView12"
+        tools:ignore="HardcodedText,MissingConstraints"
+        tools:layout_editor_absoluteX="77dp" />
+
+    <TextView
+        android:id="@+id/textView11"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/librebaskerville_italic"
+        android:text="temp"
+        android:textSize="25sp"
+        tools:ignore="HardcodedText,MissingConstraints"
+        tools:layout_editor_absoluteX="77dp"
+        tools:layout_editor_absoluteY="377dp" />
+
+    <TextView
+        android:id="@+id/textView12"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="20dp"
+        android:fontFamily="@font/librebaskerville_italic"
+        android:text="temp"
+        android:textSize="25sp"
+        app:layout_constraintBottom_toTopOf="@+id/textView11"
+        tools:ignore="HardcodedText,MissingConstraints"
+        tools:layout_editor_absoluteX="77dp" />
+
+    <TextView
+        android:id="@+id/textView13"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:fontFamily="@font/librebaskerville_italic"
+        android:text="new user"
+        android:textSize="25sp"
+        app:layout_constraintTop_toBottomOf="@+id/textView11"
+        tools:ignore="HardcodedText,MissingConstraints"
+        tools:layout_editor_absoluteX="77dp" />
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="60dp"
+        android:layout_height="61dp"
+        android:layout_marginStart="60dp"
+        android:layout_marginTop="108dp"
+        android:src="@drawable/user"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
