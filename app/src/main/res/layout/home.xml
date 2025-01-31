@@ -4,39 +4,45 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/little_vines"
     >
 
 
-    <ImageView
+    <View
         android:id="@+id/imageView5"
-        android:layout_width="401dp"
-        android:layout_height="588dp"
-        android:layout_marginStart="4dp"
-        android:layout_marginTop="68dp"
-        android:src="@drawable/colorsplash"
+        android:layout_width="0dp"
+        android:layout_height="146dp"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="272dp"
+        android:layout_marginEnd="24dp"
+        android:background="@drawable/rounded_background"
+        android:elevation="100dp"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="ContentDescription" />
 
     <TextView
         android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="48dp"
-        android:layout_marginTop="260dp"
-        android:fontFamily="@font/librebaskerville_bold"
-        android:text="Welcome"
+        android:layout_marginStart="56dp"
+        android:layout_marginTop="52dp"
+        android:elevation="150dp"
+        android:text="@string/welcome"
         android:textSize="60sp"
         app:layout_constraintStart_toStartOf="@+id/imageView5"
         app:layout_constraintTop_toTopOf="@+id/imageView5" />
 
     <Button
-        android:id="@+id/button"
+        android:id="@+id/button_flicker"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="124dp"
-        android:layout_marginTop="160dp"
-        android:text="Press to continue"
+        android:layout_marginStart="136dp"
+        android:layout_marginTop="152dp"
         android:background="@android:color/transparent"
+        android:text="@string/press_to_continue"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView" />
+        app:layout_constraintTop_toBottomOf="@+id/textView"
+        android:textStyle="bold"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

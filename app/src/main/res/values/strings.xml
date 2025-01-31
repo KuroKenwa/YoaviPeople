@@ -3,6 +3,10 @@
     <string name="password">PASSWORD</string>
     <string name="email">EMAIL</string>
     <string name="name">NAME</string>
-    <string name="sign_up">SIGN UP</string>
-    <string name="get_into_account">Get Into Account</string>
+    <string name="log_in">LOG IN</string>
+    <string name="big_log_in">Log In</string>
+    <string name="press_to_continue">Press to continue</string>
+    <string name="welcome">Welcome</string>
+    <string name="enter_a_reminder">Enter A Reminder</string>
+    <string name="temp">Temp</string>
 </resources>

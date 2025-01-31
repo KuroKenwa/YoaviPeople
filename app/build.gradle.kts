@@ -6,7 +6,7 @@ plugins {
 
 android {
     namespace = "com.example.taskmanager"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.example.taskmanager"
@@ -36,6 +36,7 @@ android {
     }
     buildFeatures {
         compose = true
+
     }
 }
 

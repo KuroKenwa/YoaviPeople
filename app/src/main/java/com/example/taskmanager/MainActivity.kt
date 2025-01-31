@@ -2,6 +2,9 @@ package com.example.taskmanager
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import android.view.animation.AnimationUtils
+import android.widget.Button
+import android.content.Intent
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
@@ -16,32 +19,30 @@ import com.example.taskmanager.ui.theme.TaskManagerTheme
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        setContent {
-            TaskManagerTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
-                }
-            }
+
+        setContentView(R.layout.home)
+
+
+        val buttonflicker = findViewById<Button>(R.id.button_flicker)
+
+        // Load the fade animation
+        val fadeAnimation = AnimationUtils.loadAnimation(this, R.anim.fade)
+
+        // Start flickering animation immediately when the screen opens
+        buttonflicker.startAnimation(fadeAnimation)
+
+
+        buttonflicker.setOnClickListener {
+            val intent = Intent(this, logInActivity::class.java)
+            startActivity(intent)
+
         }
+
+
     }
 }
 
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
 
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    TaskManagerTheme {
-        Greeting("Android")
-    }
-}
+
+
+
