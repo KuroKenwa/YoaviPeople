@@ -7,6 +7,7 @@ import android.widget.Button
 import android.content.Intent
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
@@ -19,22 +20,15 @@ import com.example.taskmanager.ui.theme.TaskManagerTheme
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
+        val authViewModel : AuthViewModel by viewModels()
+        setContent{
+            TaskManagerTheme {
+                Scaffold(modifier = Modifier.fillMaxSize()){ innerPadding ->
+                    MyAppNavigation(modifier = Modifier.padding(innerPadding),authViewModel = authViewModel)
+                }
+            }
 
-        setContentView(R.layout.home)
-
-
-        val buttonflicker = findViewById<Button>(R.id.button_flicker)
-
-        // Load the fade animation
-        val fadeAnimation = AnimationUtils.loadAnimation(this, R.anim.fade)
-
-        // Start flickering animation immediately when the screen opens
-        buttonflicker.startAnimation(fadeAnimation)
-
-
-        buttonflicker.setOnClickListener {
-            val intent = Intent(this, logInActivity::class.java)
-            startActivity(intent)
 
         }
 
