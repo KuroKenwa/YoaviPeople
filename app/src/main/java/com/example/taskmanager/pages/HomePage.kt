@@ -40,6 +40,19 @@ fun HomePage(modifier: Modifier = Modifier, navController: NavController, authVi
         }){
             Text(text = "Sign out")
         }
+
+
+        TextButton(onClick = {
+            navController.navigate("assign")
+        }) {
+            Text(text = "test test Assign")
+        }
+
+        TextButton(onClick = {
+            navController.navigate("allworks")
+        }) {
+            Text(text = "test test allworks")
+        }
     }
     
 }

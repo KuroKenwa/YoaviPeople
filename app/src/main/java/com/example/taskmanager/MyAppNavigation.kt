@@ -5,9 +5,12 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.taskmanager.pages.AssignWorkPage
 import com.example.taskmanager.pages.HomePage
 import com.example.taskmanager.pages.LoginPage
 import com.example.taskmanager.pages.SignupPage
+import com.example.taskmanager.pages.TodoScreen
+import com.example.taskmanager.pages.TodoScreen
 
 @Composable
 fun MyAppNavigation(modifier: Modifier = Modifier,authViewModel: AuthViewModel) {
@@ -26,6 +29,13 @@ fun MyAppNavigation(modifier: Modifier = Modifier,authViewModel: AuthViewModel) 
             HomePage(modifier,navController,authViewModel)
 
         }
+        composable("assign") {
+            AssignWorkPage(modifier,navController,authViewModel)
+        }
+        composable("allworks") {
+            TodoScreen(modifier,navController,authViewModel)
+        }
+
 
     })
 
