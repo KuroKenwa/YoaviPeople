@@ -5,11 +5,11 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.taskmanager.pages.AddTaskScreen
 import com.example.taskmanager.pages.AssignWorkPage
 import com.example.taskmanager.pages.HomePage
 import com.example.taskmanager.pages.LoginPage
 import com.example.taskmanager.pages.SignupPage
-import com.example.taskmanager.pages.TodoScreen
 import com.example.taskmanager.pages.TodoScreen
 
 @Composable
@@ -34,6 +34,9 @@ fun MyAppNavigation(modifier: Modifier = Modifier,authViewModel: AuthViewModel) 
         }
         composable("allworks") {
             TodoScreen(modifier,navController,authViewModel)
+        }
+        composable("addtask") {
+            AddTaskScreen(navController, onTaskAdded =  { /* refresh tasks */ })
         }
 
 
