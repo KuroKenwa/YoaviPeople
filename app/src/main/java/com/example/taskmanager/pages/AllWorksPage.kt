@@ -36,6 +36,9 @@ fun TodoScreen(
     var tasks by remember { mutableStateOf<List<Task>>(emptyList()) }
     var isLoading by remember { mutableStateOf(true) }
     val userNames = remember { mutableStateMapOf<String, String>() }
+    val auth = FirebaseAuth.getInstance()
+    val userId = auth.currentUser?.uid
+    var userNameForBar by remember { mutableStateOf("User") }
 
     LaunchedEffect(currentUser?.uid) {
         currentUser?.uid?.let { userId ->
@@ -57,6 +60,20 @@ fun TodoScreen(
         }
     }
 
+    LaunchedEffect(userId) {
+        userId?.let {
+            db.collection("users").document(it).get()
+                .addOnSuccessListener { document ->
+                    if (document.exists()) {
+                        userNameForBar = document.getString("name") ?: "User"
+                    }
+                }
+                .addOnFailureListener {
+                    Log.e("TodoScreen", "Failed to fetch user name", it)
+                }
+        }
+    }
+
     Column(modifier = Modifier.fillMaxSize()) {
         TopAppBar(
             title = {
@@ -66,12 +83,28 @@ fun TodoScreen(
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold
                 )
+
             },
             modifier = Modifier.background(Color(0xFF3F51B5)),
             colors = TopAppBarDefaults.topAppBarColors(
                 containerColor = Color(0xFF3F51B5)
-            )
+            ),
+
+            actions = {
+                Text(
+                    text = "UserName : " + userNameForBar
+                    ,color = Color.White
+                    , fontSize = 15.sp
+                    , fontWeight = FontWeight.Bold
+                    ,
+
+                    )
+            }
+
+
         )
+
+
 
         if (isLoading) {
             Box(

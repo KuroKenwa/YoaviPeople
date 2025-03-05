@@ -1,5 +1,7 @@
 package com.example.taskmanager.pages
 
+import android.app.DatePickerDialog
+import android.content.Context
 import android.util.Log
 import com.example.taskmanager.utils.addTaskToFirestore
 import androidx.compose.foundation.layout.Arrangement
@@ -33,6 +35,7 @@ import androidx.navigation.NavController
 import com.example.taskmanager.model.TaskPriority
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import java.util.Calendar
 
 @Composable
 fun AddTaskScreen(navController: NavController, onTaskAdded: () -> Unit) {
@@ -149,5 +152,17 @@ fun AddTaskScreen(navController: NavController, onTaskAdded: () -> Unit) {
         ) {
             Text("Add Task", color = Color.White)
         }
+
+
+    }
+    fun showDatePicker(context: Context, onDateSelected: (String) -> Unit) {
+        val calendar = Calendar.getInstance()
+        val year = calendar.get(Calendar.YEAR)
+        val month = calendar.get(Calendar.MONTH)
+        val day = calendar.get(Calendar.DAY_OF_MONTH)
+
+        DatePickerDialog(context, { _, selectedYear, selectedMonth, selectedDay ->
+            onDateSelected("$selectedDay/${selectedMonth + 1}/$selectedYear")
+        }, year, month, day).show()
     }
 }
