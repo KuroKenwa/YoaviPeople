@@ -7,6 +7,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.taskmanager.pages.AddTaskScreen
 import com.example.taskmanager.pages.AssignWorkPage
+import com.example.taskmanager.pages.EditTaskScreenPage
 import com.example.taskmanager.pages.HomePage
 import com.example.taskmanager.pages.LoginPage
 import com.example.taskmanager.pages.SignupPage
@@ -33,11 +34,20 @@ fun MyAppNavigation(modifier: Modifier = Modifier,authViewModel: AuthViewModel) 
             AssignWorkPage(modifier,navController,authViewModel)
         }
         composable("allworks") {
-            TodoScreen(modifier,navController,authViewModel)
+            TodoScreen(modifier,navController)
         }
-        composable("addtask") {
-            AddTaskScreen(navController, onTaskAdded =  { /* refresh tasks */ })
+        composable("addTask") {
+            AddTaskScreen(navController)
         }
+
+        composable("editTask/{taskId}/{userId}") { backStackEntry ->
+            val taskId = backStackEntry.arguments?.getString("taskId") ?: ""
+            val userId = backStackEntry.arguments?.getString("userId") ?: ""
+            EditTaskScreenPage(navController = navController, taskId = taskId, userId = userId)
+        }
+
+
+
 
 
     })

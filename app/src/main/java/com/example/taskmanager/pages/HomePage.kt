@@ -1,5 +1,8 @@
 package com.example.taskmanager.pages
 
+import android.os.Handler
+import android.os.Looper
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -14,15 +17,18 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.taskmanager.AuthState
 import com.example.taskmanager.AuthViewModel
+import com.google.firebase.auth.FirebaseAuth
 
 @Composable
 fun HomePage(modifier: Modifier = Modifier, navController: NavController, authViewModel: AuthViewModel) {
-
     val authState = authViewModel.authState.observeAsState()
 
+    // Auto-redirect to login if unauthenticated
     LaunchedEffect(authState.value) {
-        when(authState.value){
-            is AuthState.Unauthenticated -> navController.navigate("login")
+        when (authState.value) {
+            is AuthState.Unauthenticated -> navController.navigate("login") {
+                popUpTo(0) { inclusive = true } // Clears all previous screens
+            }
             else -> Unit
         }
     }
@@ -31,15 +37,15 @@ fun HomePage(modifier: Modifier = Modifier, navController: NavController, authVi
         modifier = modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
-    ){
-        Text(text = "Home Page" , fontSize = 32.sp)
+    ) {
+        Text(text = "Home Page", fontSize = 32.sp)
 
+        // Improved Sign-Out Button
         TextButton(onClick = {
-            authViewModel.signout()
-        }){
+            signOut(navController, authViewModel)
+        }) {
             Text(text = "Sign out")
         }
-
 
         TextButton(onClick = {
             navController.navigate("assign")
@@ -53,5 +59,27 @@ fun HomePage(modifier: Modifier = Modifier, navController: NavController, authVi
             Text(text = "test test allworks")
         }
     }
-    
+}
+
+// Improved Sign-Out Function
+fun signOut(navController: NavController, authViewModel: AuthViewModel) {
+    Log.d("AuthDebug", "User is attempting to sign out...")
+
+    FirebaseAuth.getInstance().currentUser?.reload()?.addOnCompleteListener { task ->
+        if (task.isSuccessful) {
+            FirebaseAuth.getInstance().signOut()
+            authViewModel.signout()
+
+            Log.d("AuthDebug", "Sign-out successful. Navigating to login.")
+
+            // Ensure Firebase state updates before navigating
+            Handler(Looper.getMainLooper()).postDelayed({
+                navController.navigate("login") {
+                    popUpTo(0) { inclusive = true }
+                }
+            }, 500) // Small delay ensures proper state update
+        } else {
+            Log.e("AuthDebug", "Error reloading Firebase user: ${task.exception?.message}")
+        }
+    }
 }
