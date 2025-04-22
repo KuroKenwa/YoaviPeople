@@ -32,7 +32,6 @@ fun AddTaskScreen(navController: NavController) {
     var selectedUsers by remember { mutableStateOf<List<String>>(emptyList()) }
     var allUsers by remember { mutableStateOf<List<Pair<String, String>>>(emptyList()) }
 
-    // Fetch all other users
     LaunchedEffect(currentUser?.uid) {
         currentUser?.uid?.let { uid ->
             db.collection("users").get()
@@ -50,34 +49,13 @@ fun AddTaskScreen(navController: NavController) {
         }
     }
 
-    Column(
-        modifier = Modifier.fillMaxSize().padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
-    ) {
+    Column(modifier = Modifier.fillMaxSize().padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
         Text("Create New Task", fontSize = 20.sp, fontWeight = FontWeight.Bold)
 
-        OutlinedTextField(
-            value = title,
-            onValueChange = { title = it },
-            label = { Text("Title") },
-            modifier = Modifier.fillMaxWidth()
-        )
+        OutlinedTextField(value = title, onValueChange = { title = it }, label = { Text("Title") }, modifier = Modifier.fillMaxWidth())
+        OutlinedTextField(value = description, onValueChange = { description = it }, label = { Text("Description") }, modifier = Modifier.fillMaxWidth())
+        OutlinedTextField(value = dueDate, onValueChange = { dueDate = it }, label = { Text("Due Date (YYYY-MM-DD)") }, modifier = Modifier.fillMaxWidth())
 
-        OutlinedTextField(
-            value = description,
-            onValueChange = { description = it },
-            label = { Text("Description") },
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        OutlinedTextField(
-            value = dueDate,
-            onValueChange = { dueDate = it },
-            label = { Text("Due Date (YYYY-MM-DD)") },
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        // Priority dropdown
         var priorityExpanded by remember { mutableStateOf(false) }
         Box {
             Button(onClick = { priorityExpanded = true }, modifier = Modifier.fillMaxWidth()) {
@@ -85,18 +63,14 @@ fun AddTaskScreen(navController: NavController) {
             }
             DropdownMenu(expanded = priorityExpanded, onDismissRequest = { priorityExpanded = false }) {
                 TaskPriority.entries.forEach { priority ->
-                    DropdownMenuItem(
-                        text = { Text(priority.level) },
-                        onClick = {
-                            selectedPriority = priority
-                            priorityExpanded = false
-                        }
-                    )
+                    DropdownMenuItem(text = { Text(priority.level) }, onClick = {
+                        selectedPriority = priority
+                        priorityExpanded = false
+                    })
                 }
             }
         }
 
-        // Status dropdown
         var statusExpanded by remember { mutableStateOf(false) }
         Box {
             Button(onClick = { statusExpanded = true }, modifier = Modifier.fillMaxWidth()) {
@@ -104,29 +78,22 @@ fun AddTaskScreen(navController: NavController) {
             }
             DropdownMenu(expanded = statusExpanded, onDismissRequest = { statusExpanded = false }) {
                 TaskStatus.entries.forEach { status ->
-                    DropdownMenuItem(
-                        text = { Text(status.status) },
-                        onClick = {
-                            selectedStatus = status
-                            statusExpanded = false
-                        }
-                    )
+                    DropdownMenuItem(text = { Text(status.status) }, onClick = {
+                        selectedStatus = status
+                        statusExpanded = false
+                    })
                 }
             }
         }
 
-        // Collaborative task toggle
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text("Collaborative Task:")
             Spacer(modifier = Modifier.width(8.dp))
-            Switch(
-                checked = isCollaborative,
-                onCheckedChange = {
-                    isCollaborative = it
-                    showUserSelection = it
-                    if (!it) selectedUsers = emptyList()
-                }
-            )
+            Switch(checked = isCollaborative, onCheckedChange = {
+                isCollaborative = it
+                showUserSelection = it
+                if (!it) selectedUsers = emptyList()
+            })
         }
 
         if (showUserSelection) {
@@ -158,11 +125,10 @@ fun AddTaskScreen(navController: NavController) {
             )
         }
 
-        // Submit button
         Button(
             onClick = {
                 currentUser?.let { user ->
-                    val assigned = (selectedUsers + user.uid).distinct()
+                    val finalUsers = (selectedUsers + user.uid).distinct()
                     val task = hashMapOf(
                         "title" to title,
                         "description" to description,
@@ -170,14 +136,13 @@ fun AddTaskScreen(navController: NavController) {
                         "priority" to selectedPriority.name,
                         "status" to selectedStatus.name,
                         "userId" to user.uid,
-                        "assignedUsers" to assigned
+                        "assignedUsers" to finalUsers,
+                        "creatorId" to user.uid
                     )
 
-                    db.collection("users").document(user.uid)
-                        .collection("tasks")
-                        .add(task)
+                    db.collection("users").document(user.uid).collection("tasks").add(task)
                         .addOnSuccessListener {
-                            Log.d("AddTaskScreen", "Task successfully added.")
+                            Log.d("AddTaskScreen", "Task added successfully")
                             navController.popBackStack()
                         }
                         .addOnFailureListener { e ->

@@ -34,7 +34,7 @@ fun MyAppNavigation(modifier: Modifier = Modifier,authViewModel: AuthViewModel) 
             AssignWorkPage(modifier,navController,authViewModel)
         }
         composable("allworks") {
-            TodoScreen(modifier,navController)
+            TodoScreen(modifier ,navController)
         }
         composable("addTask") {
             AddTaskScreen(navController)

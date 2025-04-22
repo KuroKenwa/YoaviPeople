@@ -2,7 +2,6 @@ package com.example.taskmanager.model
 
 import com.google.firebase.firestore.PropertyName
 
-// Enum class for Task Status
 enum class TaskStatus(val status: String) {
     PENDING("Pending"),
     IN_PROGRESS("In Progress"),
@@ -10,13 +9,11 @@ enum class TaskStatus(val status: String) {
 
     companion object {
         fun fromString(value: String): TaskStatus {
-            // Match Firestore enum name like "PENDING"
             return entries.find { it.name == value } ?: PENDING
         }
     }
 }
 
-// Enum class for Task Priority
 enum class TaskPriority(val level: String) {
     LOW("Low"),
     MEDIUM("Medium"),
@@ -24,13 +21,11 @@ enum class TaskPriority(val level: String) {
 
     companion object {
         fun fromString(value: String): TaskPriority {
-            // Match Firestore enum name like "LOW"
             return entries.find { it.name == value } ?: LOW
         }
     }
 }
 
-// Data class to represent a Task
 data class Task(
     @get:PropertyName("taskId") @set:PropertyName("taskId")
     var taskId: String = "",
@@ -54,8 +49,10 @@ data class Task(
     var priority: TaskPriority = TaskPriority.LOW,
 
     @get:PropertyName("assignedUsers") @set:PropertyName("assignedUsers")
-    var assignedUsers: List<String> = emptyList()
+    var assignedUsers: List<String> = emptyList(),
+
+    @get:PropertyName("creatorId") @set:PropertyName("creatorId")
+    var creatorId: String = ""
 ) {
-    // Firestore requires a no-argument constructor
-    constructor() : this("", "", "", "", "", TaskStatus.PENDING, TaskPriority.LOW, emptyList())
+    constructor() : this("", "", "", "", "", TaskStatus.PENDING, TaskPriority.LOW, emptyList(), "")
 }

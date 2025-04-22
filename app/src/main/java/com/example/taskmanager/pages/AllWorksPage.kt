@@ -1,3 +1,6 @@
+
+// AllWorksPage.kt – Final Version with Functional Delete (Collaborative + Normal)
+
 package com.example.taskmanager.pages
 
 import android.util.Log
@@ -28,19 +31,15 @@ import com.google.firebase.firestore.FirebaseFirestore
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TodoScreen(
-    modifier: Modifier = Modifier,
-    navController: NavController
-) {
+fun TodoScreen(modifier: Modifier = Modifier, navController: NavController) {
     val db = FirebaseFirestore.getInstance()
     val currentUser = FirebaseAuth.getInstance().currentUser
+    val userId = currentUser?.uid
     var tasks by remember { mutableStateOf<List<Task>>(emptyList()) }
     val userNames = remember { mutableStateMapOf<String, String>() }
-    val userId = currentUser?.uid
     var userNameForBar by remember { mutableStateOf("User") }
     var isLoading by remember { mutableStateOf(true) }
 
-    // Real-time Firestore listener
     LaunchedEffect(userId) {
         userId?.let { uid ->
             db.collectionGroup("tasks")
@@ -52,21 +51,21 @@ fun TodoScreen(
                     }
 
                     snapshot?.let {
-                        val taskList = snapshot.documents.mapNotNull { document ->
+                        val taskList = it.documents.mapNotNull { doc ->
                             try {
-                                val task = document.toObject(Task::class.java)?.copy(
-                                    taskId = document.id,
-                                    priority = TaskPriority.fromString(document.getString("priority") ?: ""),
-                                    status = TaskStatus.fromString(document.getString("status") ?: "")
+                                doc.toObject(Task::class.java)?.copy(
+                                    taskId = doc.id,
+                                    priority = TaskPriority.fromString(doc.getString("priority") ?: ""),
+                                    status = TaskStatus.fromString(doc.getString("status") ?: "")
                                 )
-                                task
                             } catch (e: Exception) {
-                                Log.e("Firestore", "Error parsing task: ${e.localizedMessage}")
+                                Log.e("Firestore", "Parse error: ${e.localizedMessage}")
                                 null
                             }
-                        }
-                        tasks = taskList.filter { task -> task.assignedUsers.contains(uid) }
-                        fetchUserNames(tasks.flatMap { it.assignedUsers }.toSet(), userNames, db)
+                        }.filter { task -> task.assignedUsers.contains(uid) }
+
+                        tasks = taskList
+                        fetchUserNames(taskList.flatMap { task -> task.assignedUsers }.toSet(), userNames, db)
                     }
 
                     isLoading = false
@@ -74,7 +73,6 @@ fun TodoScreen(
         }
     }
 
-    // Fetch logged-in user's name
     LaunchedEffect(userId) {
         userId?.let { uid ->
             db.collection("users").document(uid).get()
@@ -185,7 +183,7 @@ fun TaskCard(
                 IconButton(onClick = { navController.navigate("editTask/${task.taskId}/$userId") }) {
                     Icon(imageVector = Icons.Default.Edit, contentDescription = "Edit Task", tint = Color.White)
                 }
-                IconButton(onClick = { deleteTask(task.taskId, db, userId) }) {
+                IconButton(onClick = { deleteTask(task.taskId, db, userId, task.userId) }) {
                     Icon(imageVector = Icons.Default.Delete, contentDescription = "Delete Task", tint = Color.Red)
                 }
             }
@@ -193,15 +191,28 @@ fun TaskCard(
     }
 }
 
-fun deleteTask(taskId: String, db: FirebaseFirestore, userId: String) {
-    db.collection("users").document(userId).collection("tasks").document(taskId)
-        .delete()
-        .addOnSuccessListener {
-            Log.d("Firestore", "Task successfully deleted!")
+fun deleteTask(taskId: String, db: FirebaseFirestore, currentUserId: String, creatorId: String) {
+    val creatorTaskRef = db.collection("users").document(creatorId).collection("tasks").document(taskId)
+
+    creatorTaskRef.get().addOnSuccessListener { document ->
+        if (document.exists()) {
+            val assignedUsers = (document.get("assignedUsers") as? List<*>)?.filterIsInstance<String>()?.toMutableList() ?: return@addOnSuccessListener
+
+            if (currentUserId == creatorId) {
+                // Creator: just delete the task
+                creatorTaskRef.delete()
+            } else {
+                assignedUsers.remove(currentUserId)
+                if (assignedUsers.isEmpty()) {
+                    creatorTaskRef.delete()
+                } else {
+                    creatorTaskRef.update("assignedUsers", assignedUsers)
+                }
+            }
         }
-        .addOnFailureListener { e ->
-            Log.w("Firestore", "Error deleting task", e)
-        }
+    }.addOnFailureListener {
+        Log.e("Firestore", "Error deleting task", it)
+    }
 }
 
 fun fetchUserNames(userIds: Set<String>, userNames: MutableMap<String, String>, db: FirebaseFirestore) {

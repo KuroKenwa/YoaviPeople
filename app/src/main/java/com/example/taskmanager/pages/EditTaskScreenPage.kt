@@ -31,11 +31,9 @@ fun EditTaskScreenPage(navController: NavController, taskId: String, userId: Str
                 if (document.exists()) {
                     title = TextFieldValue(document.getString("title") ?: "")
                     description = TextFieldValue(document.getString("description") ?: "")
-                    priority = TaskPriority.fromString(document.getString("priority") ?: "Low")
-                    status = TaskStatus.fromString(document.getString("status") ?: "Pending")
-                    assignedUsers = (document.get("assignedUsers") as? List<*>)
-                        ?.filterIsInstance<String>()
-                        ?: emptyList()
+                    priority = TaskPriority.fromString(document.getString("priority") ?: "")
+                    status = TaskStatus.fromString(document.getString("status") ?: "")
+                    assignedUsers = (document.get("assignedUsers") as? List<*>)?.filterIsInstance<String>() ?: emptyList()
                 }
                 isLoading = false
             }
@@ -53,83 +51,52 @@ fun EditTaskScreenPage(navController: NavController, taskId: String, userId: Str
         Column(modifier = Modifier.padding(16.dp)) {
             Text("Edit Task", fontSize = 20.sp, modifier = Modifier.padding(bottom = 16.dp))
 
-            OutlinedTextField(
-                value = title,
-                onValueChange = { title = it },
-                label = { Text("Title") },
-                modifier = Modifier.fillMaxWidth()
-            )
+            OutlinedTextField(value = title, onValueChange = { title = it }, label = { Text("Title") }, modifier = Modifier.fillMaxWidth())
+            OutlinedTextField(value = description, onValueChange = { description = it }, label = { Text("Description") }, modifier = Modifier.fillMaxWidth().padding(top = 8.dp))
 
-            OutlinedTextField(
-                value = description,
-                onValueChange = { description = it },
-                label = { Text("Description") },
-                modifier = Modifier.fillMaxWidth().padding(top = 8.dp)
-            )
-
-            // Priority Dropdown
             var expandedPriority by remember { mutableStateOf(false) }
             Box {
-                Button(
-                    onClick = { expandedPriority = true },
-                    modifier = Modifier.fillMaxWidth().padding(top = 8.dp)
-                ) {
+                Button(onClick = { expandedPriority = true }, modifier = Modifier.fillMaxWidth().padding(top = 8.dp)) {
                     Text("Priority: ${priority.level}")
                 }
                 DropdownMenu(expanded = expandedPriority, onDismissRequest = { expandedPriority = false }) {
                     TaskPriority.entries.forEach { level ->
-                        DropdownMenuItem(
-                            text = { Text(level.level) },
-                            onClick = {
-                                priority = level
-                                expandedPriority = false
-                            }
-                        )
+                        DropdownMenuItem(text = { Text(level.level) }, onClick = {
+                            priority = level
+                            expandedPriority = false
+                        })
                     }
                 }
             }
 
-            // Status Dropdown
             var expandedStatus by remember { mutableStateOf(false) }
             Box {
-                Button(
-                    onClick = { expandedStatus = true },
-                    modifier = Modifier.fillMaxWidth().padding(top = 8.dp)
-                ) {
+                Button(onClick = { expandedStatus = true }, modifier = Modifier.fillMaxWidth().padding(top = 8.dp)) {
                     Text("Status: ${status.status}")
                 }
                 DropdownMenu(expanded = expandedStatus, onDismissRequest = { expandedStatus = false }) {
                     TaskStatus.entries.forEach { state ->
-                        DropdownMenuItem(
-                            text = { Text(state.status) },
-                            onClick = {
-                                status = state
-                                expandedStatus = false
-                            }
-                        )
+                        DropdownMenuItem(text = { Text(state.status) }, onClick = {
+                            status = state
+                            expandedStatus = false
+                        })
                     }
                 }
             }
 
             Button(
                 onClick = {
-                    val updatedTask = hashMapOf(
+                    val updatedTask = mapOf(
                         "title" to title.text,
                         "description" to description.text,
                         "priority" to priority.name,
                         "status" to status.name
                     )
 
-                    assignedUsers.forEach { uid ->
-                        db.collection("users").document(uid).collection("tasks").document(taskId)
-                            .update(updatedTask as Map<String, Any>)
-                            .addOnSuccessListener {
-                                Log.d("EditTaskScreen", "Task updated successfully for $uid")
-                            }
-                            .addOnFailureListener {
-                                Log.e("EditTaskScreen", "Error updating task for $uid", it)
-                            }
-                    }
+                    db.collection("users").document(userId).collection("tasks").document(taskId)
+                        .update(updatedTask)
+                        .addOnSuccessListener { Log.d("EditTaskScreen", "Task updated!") }
+                        .addOnFailureListener { Log.e("EditTaskScreen", "Update failed", it) }
 
                     navController.popBackStack()
                 },
