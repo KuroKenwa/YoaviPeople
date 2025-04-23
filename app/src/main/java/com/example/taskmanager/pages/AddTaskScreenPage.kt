@@ -15,6 +15,10 @@ import com.example.taskmanager.model.TaskPriority
 import com.example.taskmanager.model.TaskStatus
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import android.app.DatePickerDialog
+import androidx.compose.ui.platform.LocalContext
+import java.util.Calendar
+import java.util.Locale
 
 @Composable
 fun AddTaskScreen(navController: NavController) {
@@ -54,7 +58,32 @@ fun AddTaskScreen(navController: NavController) {
 
         OutlinedTextField(value = title, onValueChange = { title = it }, label = { Text("Title") }, modifier = Modifier.fillMaxWidth())
         OutlinedTextField(value = description, onValueChange = { description = it }, label = { Text("Description") }, modifier = Modifier.fillMaxWidth())
-        OutlinedTextField(value = dueDate, onValueChange = { dueDate = it }, label = { Text("Due Date (YYYY-MM-DD)") }, modifier = Modifier.fillMaxWidth())
+
+        val context = LocalContext.current
+        val calendar = Calendar.getInstance()
+
+        Button(
+            onClick = {
+                DatePickerDialog(
+                    context,
+                    { _, year, month, dayOfMonth ->
+                        val formattedMonth = String.format(Locale.US, "%02d", month + 1)
+                        val formattedDay = String.format(Locale.US, "%02d", dayOfMonth)
+                        dueDate = "$year-$formattedMonth-$formattedDay"
+                    },
+                    calendar.get(Calendar.YEAR),
+                    calendar.get(Calendar.MONTH),
+                    calendar.get(Calendar.DAY_OF_MONTH)
+                ).show()
+            },
+            modifier = Modifier.fillMaxWidth(),
+            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF90CAF9))
+        ) {
+            Text(
+                text = if (dueDate.isBlank()) "Pick Due Date" else "Due Date: $dueDate",
+                color = Color.Black
+            )
+        }
 
         var priorityExpanded by remember { mutableStateOf(false) }
         Box {

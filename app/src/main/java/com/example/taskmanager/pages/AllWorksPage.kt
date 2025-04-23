@@ -130,66 +130,117 @@ fun TaskCard(
     userId: String
 ) {
     Card(
-        modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
-        shape = RoundedCornerShape(8.dp),
-        colors = CardDefaults.cardColors(containerColor = Color(0xFF363636))
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 6.dp),
+        shape = RoundedCornerShape(12.dp),
+        colors = CardDefaults.cardColors(containerColor = Color(0xFF2E3A59))
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
+
+            // Date & Status Row
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(text = task.dueDate, color = Color(0xFF64B5F6), fontSize = 14.sp)
+                Text(
+                    text = task.dueDate,
+                    color = Color(0xFF90CAF9),
+                    fontSize = 13.sp,
+                    fontWeight = FontWeight.Medium
+                )
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(
                         text = task.status.status,
                         color = when (task.status) {
-                            TaskStatus.PENDING -> Color(0xFFE91E63)
-                            TaskStatus.IN_PROGRESS -> Color(0xFFFF9800)
-                            TaskStatus.COMPLETED -> Color(0xFF4CAF50)
+                            TaskStatus.PENDING -> Color(0xFFFF6F61)
+                            TaskStatus.IN_PROGRESS -> Color(0xFFFFC107)
+                            TaskStatus.COMPLETED -> Color(0xFF66BB6A)
                         },
-                        fontSize = 14.sp
+                        fontSize = 13.sp,
+                        fontWeight = FontWeight.SemiBold
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Box(
-                        modifier = Modifier.size(12.dp).clip(CircleShape).background(Color.Green)
+                        modifier = Modifier
+                            .size(10.dp)
+                            .clip(CircleShape)
+                            .background(
+                                when (task.status) {
+                                    TaskStatus.PENDING -> Color(0xFFFF6F61)
+                                    TaskStatus.IN_PROGRESS -> Color(0xFFFFC107)
+                                    TaskStatus.COMPLETED -> Color(0xFF66BB6A)
+                                }
+                            )
                     )
                 }
             }
 
-            Text(text = task.title, color = Color.White, fontSize = 16.sp, modifier = Modifier.padding(vertical = 8.dp))
-            Text(text = "Description:", color = Color.White, fontSize = 14.sp)
-            Text(text = task.description, color = Color.White, fontSize = 14.sp, modifier = Modifier.padding(bottom = 8.dp))
+            // Title
+            Text(
+                text = task.title,
+                color = Color.White,
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.padding(top = 8.dp, bottom = 4.dp)
+            )
 
+            // Description
+            Text(
+                text = task.description,
+                color = Color(0xFFCFD8DC),
+                fontSize = 14.sp,
+                modifier = Modifier.padding(bottom = 8.dp)
+            )
+
+            // Priority
             Text(
                 text = "Priority: ${task.priority.level}",
-                color = Color(0xFFFFC107),
-                fontSize = 12.sp,
+                color = when (task.priority) {
+                    TaskPriority.HIGH -> Color(0xFFFF5252)
+                    TaskPriority.MEDIUM -> Color(0xFFFFA726)
+                    TaskPriority.LOW -> Color(0xFF81C784)
+                },
+                fontSize = 13.sp,
+                fontWeight = FontWeight.Medium,
                 modifier = Modifier.padding(bottom = 4.dp)
             )
 
+            // Assigned Users
             val assignedNames = task.assignedUsers.mapNotNull { userNames[it] }.ifEmpty { listOf("Unknown") }
             Text(
                 text = "Assigned to: ${assignedNames.joinToString()}",
-                color = Color(0xFF64B5F6),
-                fontSize = 12.sp
+                color = Color(0xFF90CAF9),
+                fontSize = 13.sp
             )
 
+            // Action Buttons
             Row(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 10.dp),
                 horizontalArrangement = Arrangement.End
             ) {
                 IconButton(onClick = { navController.navigate("editTask/${task.taskId}/$userId") }) {
-                    Icon(imageVector = Icons.Default.Edit, contentDescription = "Edit Task", tint = Color.White)
+                    Icon(
+                        imageVector = Icons.Default.Edit,
+                        contentDescription = "Edit Task",
+                        tint = Color(0xFFBBDEFB)
+                    )
                 }
                 IconButton(onClick = { deleteTask(task.taskId, db, userId, task.userId) }) {
-                    Icon(imageVector = Icons.Default.Delete, contentDescription = "Delete Task", tint = Color.Red)
+                    Icon(
+                        imageVector = Icons.Default.Delete,
+                        contentDescription = "Delete Task",
+                        tint = Color(0xFFFF8A65)
+                    )
                 }
             }
         }
     }
 }
+
 
 fun deleteTask(taskId: String, db: FirebaseFirestore, currentUserId: String, creatorId: String) {
     val creatorTaskRef = db.collection("users").document(creatorId).collection("tasks").document(taskId)
