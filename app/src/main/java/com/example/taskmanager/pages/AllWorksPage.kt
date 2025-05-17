@@ -1,6 +1,3 @@
-
-// AllWorksPage.kt – Final Version with Functional Delete (Collaborative + Normal)
-
 package com.example.taskmanager.pages
 
 import android.util.Log
@@ -19,10 +16,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.taskmanager.MainActivity
 import com.example.taskmanager.model.Task
 import com.example.taskmanager.model.TaskPriority
 import com.example.taskmanager.model.TaskStatus
@@ -39,6 +38,15 @@ fun TodoScreen(modifier: Modifier = Modifier, navController: NavController) {
     val userNames = remember { mutableStateMapOf<String, String>() }
     var userNameForBar by remember { mutableStateOf("User") }
     var isLoading by remember { mutableStateOf(true) }
+    var didTriggerNotifications by remember { mutableStateOf(false) }
+
+    val context = LocalContext.current
+    LaunchedEffect(Unit) {
+        if (!didTriggerNotifications && context is MainActivity) {
+            context.runNotificationWorkersIfLoggedIn()
+            didTriggerNotifications = true
+        }
+    }
 
     LaunchedEffect(userId) {
         userId?.let { uid ->
@@ -137,8 +145,6 @@ fun TaskCard(
         colors = CardDefaults.cardColors(containerColor = Color(0xFF2E3A59))
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
-
-            // Date & Status Row
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -177,7 +183,6 @@ fun TaskCard(
                 }
             }
 
-            // Title
             Text(
                 text = task.title,
                 color = Color.White,
@@ -186,7 +191,6 @@ fun TaskCard(
                 modifier = Modifier.padding(top = 8.dp, bottom = 4.dp)
             )
 
-            // Description
             Text(
                 text = task.description,
                 color = Color(0xFFCFD8DC),
@@ -194,7 +198,6 @@ fun TaskCard(
                 modifier = Modifier.padding(bottom = 8.dp)
             )
 
-            // Priority
             Text(
                 text = "Priority: ${task.priority.level}",
                 color = when (task.priority) {
@@ -207,7 +210,6 @@ fun TaskCard(
                 modifier = Modifier.padding(bottom = 4.dp)
             )
 
-            // Assigned Users
             val assignedNames = task.assignedUsers.mapNotNull { userNames[it] }.ifEmpty { listOf("Unknown") }
             Text(
                 text = "Assigned to: ${assignedNames.joinToString()}",
@@ -215,7 +217,6 @@ fun TaskCard(
                 fontSize = 13.sp
             )
 
-            // Action Buttons
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -241,7 +242,6 @@ fun TaskCard(
     }
 }
 
-
 fun deleteTask(taskId: String, db: FirebaseFirestore, currentUserId: String, creatorId: String) {
     val creatorTaskRef = db.collection("users").document(creatorId).collection("tasks").document(taskId)
 
@@ -250,7 +250,6 @@ fun deleteTask(taskId: String, db: FirebaseFirestore, currentUserId: String, cre
             val assignedUsers = (document.get("assignedUsers") as? List<*>)?.filterIsInstance<String>()?.toMutableList() ?: return@addOnSuccessListener
 
             if (currentUserId == creatorId) {
-                // Creator: just delete the task
                 creatorTaskRef.delete()
             } else {
                 assignedUsers.remove(currentUserId)

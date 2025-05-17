@@ -60,7 +60,7 @@ fun LoginPage(modifier: Modifier = Modifier, navController: NavController, authV
                                         if (document.exists()) {
                                             val userName = document.getString("name") ?: ""
                                             Log.d("LoginPage", "User logged in: $userName")
-                                            navController.navigate("home")
+                                            navController.navigate("allworks")
                                         } else {
                                             Log.e("LoginPage", "User data not found in Firestore")
                                             errorMessage = "User data not found. Try signing up again."

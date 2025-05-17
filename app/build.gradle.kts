@@ -57,6 +57,8 @@ dependencies {
     implementation(libs.firebase.firestore) // Check for the latest version
     implementation(libs.androidx.runtime.livedata)
     implementation(libs.cronet.embedded)
+    implementation(libs.androidx.work.runtime.ktx)
+    implementation(libs.androidx.core.ktx.v1120)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -64,4 +66,5 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+
 }
